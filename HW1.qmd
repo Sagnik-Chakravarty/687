@@ -1,0 +1,32 @@
+```{r setup}
+library(tidyverse)
+library(nlme)
+library(lme4)
+library(geepack)
+library(broom)
+library(broom.mixed)
+
+theme_set(theme_minimal())
+
+load("/Users/sagnikchakravarty/Downloads/hrs_wbbp_long.rda")
+
+hrs <- hrs_wbbp_long %>%
+	mutate(
+		RAGENDER = factor(RAGENDER, levels = c(1, 2), labels = c("Male", "Female"))
+	) %>%
+	arrange(HHIDPN, year) %>%
+	group_by(HHIDPN) %>%
+	mutate(
+		age0 = first(age_y),
+		htn = as.integer(bp_sys >= 140)
+	) %>%
+	ungroup()
+
+age0_mean <- mean(hrs$age0, na.rm = TRUE)
+
+hrs <- hrs %>%
+	mutate(
+		age0_c = age0 - age0_mean,
+		year_factor = factor(year)
+	)
+```
